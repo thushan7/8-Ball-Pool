@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8 Ball Pool</title>
+  </head>
+  <body>
+    <h1>8 Ball Pool</h1>
+    <form id="setup">
+      <label for="game">Game Name:</label>
+      <input type="text" id="gameName" name="game" required><br><br>
+      <label for="p1">Player 1 Name:</label>
+      <input type="text" id="player1" name="p1" required><br><br>
+      <label for="p1">Player 2 Name:</label>
+      <input type="text" id="player2" name="p2" required><br><br>
+      <button type="submit">Save</button>
+    </form>
+    <button id="start">Start Game</button>
+    <script>
+      document.getElementById('setup').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var form = new FormData(document.getElementById('setup'));
+        var x = new XMLHttpRequest();
+        x.open('POST', '/setup.html', true);
+        x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        x.onload = function() {
+          if (x.status == 200) {
+            alert('successfully saved game');
+          } else {
+            alert('error: could not save game');
+          }
+        };
+        x.send(new URLSearchParams(form).toString());
+      });
+
+      document.getElementById('start').addEventListener('click', function() {
+        var x = new XMLHttpRequest();
+        x.open('POST', '/play.html', true);
+        x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        x.onload = function() {
+          if (x.status == 200) {
+            var response = x.responseText;
+            document.write(response);
+          } else {
+            alert('error: could not start game');
+          }
+        };
+        x.send();
+      });
+    </script>
+  </body>
+</html>
