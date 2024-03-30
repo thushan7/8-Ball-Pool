@@ -1,15 +1,28 @@
 import sys;
-import os;
 from http.server import HTTPServer, BaseHTTPRequestHandler;
 from urllib.parse import urlparse;
 import Physics;
+from Physics import Game;
 import random;
+import json;
+
+game = None;
+p1 = None;
+p2 = None;
+turn = 0; #increment by 1 each shot, odd=p1 turn and even=p2 turn
+poolGame = None;
+table = None;
 
 class MyHandler( BaseHTTPRequestHandler ):
+    global game, p1, p2, turn, poolGame, table;
+
     def do_GET(self):
         """
         GET Request function.
         """
+
+        global game, p1, p2, turn, poolGame, table;
+        
         parsed = urlparse(self.path);
         if parsed.path in [ '/shoot.html' ]:
             fp = open('.'+self.path);
@@ -43,6 +56,9 @@ class MyHandler( BaseHTTPRequestHandler ):
         """
         POST Request function.
         """
+
+        global game, p1, p2, turn, poolGame, table;
+
         parsed = urlparse(self.path);
 
         if parsed.path in [ '/setup.html' ]: #webpage to enter player and game names
@@ -50,9 +66,7 @@ class MyHandler( BaseHTTPRequestHandler ):
             post = self.rfile.read(int(self.headers['Content-length']));
             #parse data
             form = post.decode('utf-8').split('&');
-            game = None;
-            p1 = None;
-            p2 = None;
+            
             for value in form:
                 name, data = value.split('=');
                 if name == 'game':
@@ -64,7 +78,7 @@ class MyHandler( BaseHTTPRequestHandler ):
             #create database
             db = Physics.Database();
             db.createDB();
-            self.poolGame = Physics.Game(gameName=game, player1Name=p1, player2Name=p2);
+            poolGame = Game(gameName=game, player1Name=p1, player2Name=p2);
             #send 200 response back to browser
             response = "Game successfully created";
             self.send_response(200);
@@ -85,10 +99,11 @@ class MyHandler( BaseHTTPRequestHandler ):
             #place 15 coloured balls at starting positions, counting up and to the right
                 #first row (bottom)
             pos1 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0+random.uniform(-3.0,3.0),
-                                      Physics.TABLE_WIDTH/2.0+random.uniform(-3.0,3.0));
+                                      Physics.TABLE_WIDTH+random.uniform(-3.0,3.0));
             ball1 = Physics.StillBall(1, pos1);
             table += ball1;
                 #second row
+            '''
             pos2 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0-Physics.BALL_RADIUS+random.uniform(-3.0,3.0),
                                       Physics.TABLE_WIDTH/2.0-Physics.BALL_DIAMETER+random.uniform(-3.0,3.0));
             ball2 = Physics.StillBall(2, pos2);
@@ -97,7 +112,9 @@ class MyHandler( BaseHTTPRequestHandler ):
                                       Physics.TABLE_WIDTH/2.0-Physics.BALL_DIAMETER+random.uniform(-3.0,3.0));
             ball3 = Physics.StillBall(3, pos3);
             table += ball3;
+            '''
                 #third row
+            '''
             pos4 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0-Physics.BALL_DIAMETER+random.uniform(-3.0,3.0),
                                       Physics.TABLE_WIDTH/2.0-2*Physics.BALL_DIAMETER+random.uniform(-3.0,3.0));
             ball4 = Physics.StillBall(4, pos4);
@@ -110,7 +127,9 @@ class MyHandler( BaseHTTPRequestHandler ):
                                       Physics.TABLE_WIDTH/2.0-2*Physics.BALL_DIAMETER+random.uniform(-3.0,3.0));
             ball6 = Physics.StillBall(6, pos6);
             table += ball6;
+            '''
                 #fourth row
+            '''
             pos7 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0-3*Physics.BALL_RADIUS+random.uniform(-3.0,3.0),
                                       Physics.TABLE_WIDTH/2.0-3*Physics.BALL_DIAMETER+random.uniform(-3.0,3.0));
             ball7 = Physics.StillBall(7, pos7);
@@ -127,7 +146,9 @@ class MyHandler( BaseHTTPRequestHandler ):
                                       Physics.TABLE_WIDTH/2.0-3*Physics.BALL_DIAMETER+random.uniform(-3.0,3.0));
             ball10 = Physics.StillBall(10, pos10);
             table += ball10;
+            '''
                 #fifth row (top)
+            '''
             pos11 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0-2*Physics.BALL_DIAMETER+random.uniform(-3.0,3.0),
                                       Physics.TABLE_WIDTH/2.0-4*Physics.BALL_DIAMETER+random.uniform(-3.0,3.0));
             ball11 = Physics.StillBall(11, pos11);
@@ -148,6 +169,7 @@ class MyHandler( BaseHTTPRequestHandler ):
                                       Physics.TABLE_WIDTH/2.0-4*Physics.BALL_DIAMETER+random.uniform(-3.0,3.0));
             ball15 = Physics.StillBall(15, pos15);
             table += ball15;
+            '''
 
             svg = table.svg();
             html = f"""<!DOCTYPE html>
@@ -172,6 +194,7 @@ class MyHandler( BaseHTTPRequestHandler ):
                                 <div id="container">
                                     {svg}
                                 </div>
+                                <div id="frames"></div>
                                 <svg id="line" width="100%" height="100%">
                                     <line id="aiming-line" x1="0" y1="0" x2="0" y2="0" stroke="black" stroke-width="5"/>
                                 </svg>
@@ -216,22 +239,40 @@ class MyHandler( BaseHTTPRequestHandler ):
                                             }}
                                         }}
                                         
-                                        function handleMouseUp() {{
+                                        function handleMouseUp(event) {{
                                             if (isDragging) {{
                                                 isDragging = false;
                                                 document.getElementById('line').style.display = 'none';
-
+                                                
                                                 const dx = event.clientX - initialX;
                                                 const dy = event.clientY - initialY;
                                                 const velx = dx/MAX_LINE_LENGTH*10000;
                                                 const vely = dy/MAX_LINE_LENGTH*10000;
-                                                const speed = Math.sqrt(velx**2 + vely**2);
-                                                const accx = 0;
-                                                const accy = 0;
-                                                if (speed > Physics.VEL_EPSILON) {{
-                                                    accx = (-1)*(velx)/speed*Physics.DRAG;
-                                                    accy = (-1)*(vely)/speed*Physics.DRAG;
-                                                }}
+
+                                                const x = new XMLHttpRequest();
+                                                x.open('POST', '/shoot.html', true);
+                                                x.setRequestHeader('Content-type', 'application/json');
+                                                const data = JSON.stringify({{xvel: velx, yvel: vely}});
+
+                                                x.onreadystatechange = function() {{
+                                                    if (x.readyState === XMLHttpRequest.DONE) {{
+                                                        if (x.status === 200) {{
+                                                            const frames = JSON.parse(x.responseText);
+                                                            const container = document.getElementById('frames');
+                                                            let i = 0;
+                                                            function displayFrames() {{
+                                                                if (i < frames.length) {{
+                                                                    container.innerHTML = frames[i];
+                                                                    i++;
+                                                                    setTimeout(displayFrames, 1);
+                                                                }}
+                                                            }}
+                                                            displayFrames();
+                                                        }}
+                                                    }}
+                                                }};
+                                                
+                                                x.send(data);
                                             }}
                                         }}
 
@@ -252,6 +293,21 @@ class MyHandler( BaseHTTPRequestHandler ):
             self.send_header('Content-length', len(html));
             self.end_headers();
             self.wfile.write(html.encode('utf-8'));
+        
+        elif parsed.path in [ '/shoot.html' ]: #shooting the cue ball
+            postData = self.rfile.read(int(self.headers['Content-Length']));
+            data = json.loads(postData.decode('utf-8'));
+            xvel = data['xvel'];
+            yvel = data['yvel'];
+            turn += 1;
+            if (turn%2 != 0):
+                frames = poolGame.shoot(game, p1, table, xvel, yvel);
+            else:
+                frames = poolGame.shoot(game, p2, table, xvel, yvel);
+            self.send_response(200);
+            self.send_header('Content-type', 'application/json');
+            self.end_headers();
+            self.wfile.write(json.dumps(frames).encode('utf-8'));
 
         else:
             self.send_response( 404 );
@@ -264,6 +320,6 @@ class MyHandler( BaseHTTPRequestHandler ):
 
 if __name__ == "__main__":
     httpd = HTTPServer( ( 'localhost', int(sys.argv[1]) ), MyHandler );
-    print( "Server listing in port:  ", int(sys.argv[1]) );
+    print( "Server listening in port:  ", int(sys.argv[1]) );
     httpd.serve_forever();
 

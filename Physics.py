@@ -398,7 +398,6 @@ class Database():
         table.time = time[0];
     
         cursor.close();
-        Database.conn.commit();
     
         return table;
 
@@ -436,7 +435,6 @@ class Database():
                                             (ballID, tableID));
         
         cursor.close();
-        Database.conn.commit();
     
         return tableID-1;
 
@@ -486,7 +484,6 @@ class Game():
             self.player2Name = p2;
 
             cursor.close();
-            Database.conn.commit();
         
         #creating game based on values supplied by the calling function
         elif gameID is None and gameName is not None and isinstance(gameName, str) and player1Name is not None and isinstance(player1Name, str) and player2Name is not None and isinstance(player2Name, str):
@@ -522,7 +519,7 @@ class Game():
         """
         This function simulates a shot in a game of pool.
         """
-
+        
         cursor = Database.conn.cursor();
 
         #retrieve playerID and gameID to update Shot table
@@ -545,7 +542,7 @@ class Game():
 
         xpos = None;
         ypos = None;
-
+        
         #changing cue ball from a still ball to a rolling ball to begin the "shot"
         for object in table:
             if object is not None and isinstance(object, StillBall) and object.obj.still_ball.number==0:
@@ -570,21 +567,27 @@ class Game():
                 object.obj.rolling_ball.acc.y = yacc;
 
                 object.obj.rolling_ball.number = 0;
+                
+
+        svgFrames = [];
 
         #write the "shot" to the database frame-by-frame
         while table:
+            
             startTime = table.time;
             startingTable = table;
 
             table = table.segment(); #entirety of the "shot"
 
             if table is not None:
+                
                 endTime = table.time;
                 length = endTime - startTime; #duration of shot in seconds
                 length /= FRAME_INTERVAL;
                 length = math.floor(length); #number of frames for the shot
 
                 for i in range(0, length+1): #write each individual frame of the shot to the database
+                    
                     curr = i*FRAME_INTERVAL;
                     currentTable = startingTable.roll(curr);
                     currentTable.time = startTime + curr;
@@ -595,5 +598,12 @@ class Game():
                                         VALUES (?, ?)""",
                                         (tableID+1, shotID));
 
+                    currentSvg = currentTable.svg();
+                    svgFrames.append(currentSvg);
+                
+        
+        
         cursor.close();
         Database.conn.commit();
+        
+        return svgFrames;
