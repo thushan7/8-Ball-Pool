@@ -3,7 +3,6 @@ from http.server import HTTPServer, BaseHTTPRequestHandler;
 from urllib.parse import urlparse;
 import Physics;
 from Physics import Game;
-import random;
 import json;
 
 game = None;
@@ -98,78 +97,74 @@ class MyHandler( BaseHTTPRequestHandler ):
         
             #place 15 coloured balls at starting positions, counting up and to the right
                 #first row (bottom)
-            pos1 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0+random.uniform(-3.0,3.0),
-                                      Physics.TABLE_WIDTH+random.uniform(-3.0,3.0));
+            pos1 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0,
+                                      Physics.TABLE_WIDTH/2.0);
             ball1 = Physics.StillBall(1, pos1);
             table += ball1;
+
                 #second row
-            '''
-            pos2 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0-Physics.BALL_RADIUS+random.uniform(-3.0,3.0),
-                                      Physics.TABLE_WIDTH/2.0-Physics.BALL_DIAMETER+random.uniform(-3.0,3.0));
+            pos2 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0-Physics.BALL_RADIUS-2,
+                                      Physics.TABLE_WIDTH/2.0-Physics.BALL_DIAMETER-6);
             ball2 = Physics.StillBall(2, pos2);
             table += ball2;
-            pos3 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0+Physics.BALL_RADIUS+random.uniform(-3.0,3.0),
-                                      Physics.TABLE_WIDTH/2.0-Physics.BALL_DIAMETER+random.uniform(-3.0,3.0));
+            pos3 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0+Physics.BALL_RADIUS+2,
+                                      Physics.TABLE_WIDTH/2.0-Physics.BALL_DIAMETER-3);
             ball3 = Physics.StillBall(3, pos3);
             table += ball3;
-            '''
+            
                 #third row
-            '''
-            pos4 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0-Physics.BALL_DIAMETER+random.uniform(-3.0,3.0),
-                                      Physics.TABLE_WIDTH/2.0-2*Physics.BALL_DIAMETER+random.uniform(-3.0,3.0));
+            pos4 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0-Physics.BALL_DIAMETER-2,
+                                      Physics.TABLE_WIDTH/2.0-2*Physics.BALL_DIAMETER-10);
             ball4 = Physics.StillBall(4, pos4);
             table += ball4;
-            pos5 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0+random.uniform(-3.0,3.0),
-                                      Physics.TABLE_WIDTH/2.0-2*Physics.BALL_DIAMETER+random.uniform(-3.0,3.0));
+            pos5 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0,
+                                      Physics.TABLE_WIDTH/2.0-2*Physics.BALL_DIAMETER-12);
             ball5 = Physics.StillBall(5, pos5);
             table += ball5;
-            pos6 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0+Physics.BALL_DIAMETER+random.uniform(-3.0,3.0),
-                                      Physics.TABLE_WIDTH/2.0-2*Physics.BALL_DIAMETER+random.uniform(-3.0,3.0));
+            pos6 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0+Physics.BALL_DIAMETER+2,
+                                      Physics.TABLE_WIDTH/2.0-2*Physics.BALL_DIAMETER-10);
             ball6 = Physics.StillBall(6, pos6);
             table += ball6;
-            '''
+            
                 #fourth row
-            '''
-            pos7 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0-3*Physics.BALL_RADIUS+random.uniform(-3.0,3.0),
-                                      Physics.TABLE_WIDTH/2.0-3*Physics.BALL_DIAMETER+random.uniform(-3.0,3.0));
+            pos7 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0-3*Physics.BALL_RADIUS-4,
+                                      Physics.TABLE_WIDTH/2.0-3*Physics.BALL_DIAMETER-13);
             ball7 = Physics.StillBall(7, pos7);
             table += ball7;
-            pos8 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0-Physics.BALL_RADIUS+random.uniform(-3.0,3.0),
-                                      Physics.TABLE_WIDTH/2.0-3*Physics.BALL_DIAMETER+random.uniform(-3.0,3.0));
+            pos8 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0-Physics.BALL_RADIUS-2,
+                                      Physics.TABLE_WIDTH/2.0-3*Physics.BALL_DIAMETER-16);
             ball8 = Physics.StillBall(8, pos8);
             table += ball8;
-            pos9 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0+Physics.BALL_RADIUS+random.uniform(-3.0,3.0),
-                                      Physics.TABLE_WIDTH/2.0-3*Physics.BALL_DIAMETER+random.uniform(-3.0,3.0));
+            pos9 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0+Physics.BALL_RADIUS+2,
+                                      Physics.TABLE_WIDTH/2.0-3*Physics.BALL_DIAMETER-18);
             ball9 = Physics.StillBall(9, pos9);
             table += ball9;
-            pos10 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0+3*Physics.BALL_RADIUS+random.uniform(-3.0,3.0),
-                                      Physics.TABLE_WIDTH/2.0-3*Physics.BALL_DIAMETER+random.uniform(-3.0,3.0));
+            pos10 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0+3*Physics.BALL_RADIUS+4,
+                                      Physics.TABLE_WIDTH/2.0-3*Physics.BALL_DIAMETER-14);
             ball10 = Physics.StillBall(10, pos10);
             table += ball10;
-            '''
+            
                 #fifth row (top)
-            '''
-            pos11 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0-2*Physics.BALL_DIAMETER+random.uniform(-3.0,3.0),
-                                      Physics.TABLE_WIDTH/2.0-4*Physics.BALL_DIAMETER+random.uniform(-3.0,3.0));
+            pos11 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0-2*Physics.BALL_DIAMETER-4,
+                                      Physics.TABLE_WIDTH/2.0-4*Physics.BALL_DIAMETER-16);
             ball11 = Physics.StillBall(11, pos11);
             table += ball11;
-            pos12 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0-Physics.BALL_DIAMETER+random.uniform(-3.0,3.0),
-                                      Physics.TABLE_WIDTH/2.0-4*Physics.BALL_DIAMETER+random.uniform(-3.0,3.0));
+            pos12 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0-Physics.BALL_DIAMETER-2,
+                                      Physics.TABLE_WIDTH/2.0-4*Physics.BALL_DIAMETER-21);
             ball12 = Physics.StillBall(12, pos12);
             table += ball12;
-            pos13 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0+random.uniform(-3.0,3.0),
-                                      Physics.TABLE_WIDTH/2.0-4*Physics.BALL_DIAMETER+random.uniform(-3.0,3.0));
+            pos13 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0,
+                                      Physics.TABLE_WIDTH/2.0-4*Physics.BALL_DIAMETER-24);
             ball13 = Physics.StillBall(13, pos13);
             table += ball13;
-            pos14 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0+Physics.BALL_DIAMETER+random.uniform(-3.0,3.0),
-                                      Physics.TABLE_WIDTH/2.0-4*Physics.BALL_DIAMETER+random.uniform(-3.0,3.0));
+            pos14 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0+Physics.BALL_DIAMETER+2,
+                                      Physics.TABLE_WIDTH/2.0-4*Physics.BALL_DIAMETER-20);
             ball14 = Physics.StillBall(14, pos14);
             table += ball14;
-            pos15 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0+2*Physics.BALL_DIAMETER+random.uniform(-3.0,3.0),
-                                      Physics.TABLE_WIDTH/2.0-4*Physics.BALL_DIAMETER+random.uniform(-3.0,3.0));
+            pos15 = Physics.Coordinate(Physics.TABLE_WIDTH/2.0+2*Physics.BALL_DIAMETER+4,
+                                      Physics.TABLE_WIDTH/2.0-4*Physics.BALL_DIAMETER-15);
             ball15 = Physics.StillBall(15, pos15);
             table += ball15;
-            '''
 
             svg = table.svg();
             html = f"""<!DOCTYPE html>
@@ -243,7 +238,6 @@ class MyHandler( BaseHTTPRequestHandler ):
                                             if (isDragging) {{
                                                 isDragging = false;
                                                 document.getElementById('line').style.display = 'none';
-                                                
                                                 const dx = event.clientX - initialX;
                                                 const dy = event.clientY - initialY;
                                                 const velx = dx/MAX_LINE_LENGTH*10000;
@@ -253,18 +247,20 @@ class MyHandler( BaseHTTPRequestHandler ):
                                                 x.open('POST', '/shoot.html', true);
                                                 x.setRequestHeader('Content-type', 'application/json');
                                                 const data = JSON.stringify({{xvel: velx, yvel: vely}});
-
+                                                var container = document.getElementById('container');
+                                                container.parentNode.removeChild(container);
                                                 x.onreadystatechange = function() {{
                                                     if (x.readyState === XMLHttpRequest.DONE) {{
                                                         if (x.status === 200) {{
                                                             const frames = JSON.parse(x.responseText);
                                                             const container = document.getElementById('frames');
                                                             let i = 0;
+                                                            
                                                             function displayFrames() {{
                                                                 if (i < frames.length) {{
                                                                     container.innerHTML = frames[i];
                                                                     i++;
-                                                                    setTimeout(displayFrames, 1);
+                                                                    setTimeout(displayFrames, 10);
                                                                 }}
                                                             }}
                                                             displayFrames();
