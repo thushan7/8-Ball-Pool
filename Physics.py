@@ -569,7 +569,7 @@ class Game():
                 object.obj.rolling_ball.number = 0;
                 
 
-        svgFrames = [];
+        svgFrames = []; #an array of SVGs, where each SVG represents a single "frame" of the shot
 
         #write the "shot" to the database frame-by-frame
         while table:

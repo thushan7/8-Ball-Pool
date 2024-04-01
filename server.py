@@ -8,19 +8,18 @@ import json;
 game = None;
 p1 = None;
 p2 = None;
-turn = 0; #increment by 1 each shot, odd=p1 turn and even=p2 turn
 poolGame = None;
 table = None;
 
 class MyHandler( BaseHTTPRequestHandler ):
-    global game, p1, p2, turn, poolGame, table;
+    global game, p1, p2, poolGame, table;
 
     def do_GET(self):
         """
         GET Request function.
         """
 
-        global game, p1, p2, turn, poolGame, table;
+        global game, p1, p2, poolGame, table;
         
         parsed = urlparse(self.path);
         if parsed.path in [ '/shoot.html' ]:
@@ -56,16 +55,13 @@ class MyHandler( BaseHTTPRequestHandler ):
         POST Request function.
         """
 
-        global game, p1, p2, turn, poolGame, table;
+        global game, p1, p2, poolGame, table;
 
         parsed = urlparse(self.path);
 
         if parsed.path in [ '/setup.html' ]: #webpage to enter player and game names
-            #read data
             post = self.rfile.read(int(self.headers['Content-length']));
-            #parse data
             form = post.decode('utf-8').split('&');
-            
             for value in form:
                 name, data = value.split('=');
                 if name == 'game':
@@ -74,11 +70,11 @@ class MyHandler( BaseHTTPRequestHandler ):
                     p1 = data;
                 elif name == 'p2':
                     p2 = data;
-            #create database
+            
             db = Physics.Database();
             db.createDB();
             poolGame = Game(gameName=game, player1Name=p1, player2Name=p2);
-            #send 200 response back to browser
+
             response = "Game successfully created";
             self.send_response(200);
             self.send_header('Content-type', 'text/plain');
@@ -193,7 +189,7 @@ class MyHandler( BaseHTTPRequestHandler ):
                                 <svg id="line" width="100%" height="100%">
                                     <line id="aiming-line" x1="0" y1="0" x2="0" y2="0" stroke="black" stroke-width="5"/>
                                 </svg>
-                                    <script>                       
+                                    <script>                
                                         let isDragging = false;
                                         let initialX, initialY;
                                         const MAX_LINE_LENGTH = 500;
@@ -294,11 +290,7 @@ class MyHandler( BaseHTTPRequestHandler ):
             data = json.loads(postData.decode('utf-8'));
             xvel = data['xvel'];
             yvel = data['yvel'];
-            turn += 1;
-            if (turn%2 != 0):
-                frames = poolGame.shoot(game, p1, table, xvel, yvel);
-            else:
-                frames = poolGame.shoot(game, p2, table, xvel, yvel);
+            frames = poolGame.shoot(game, p1, table, xvel, yvel);
             self.send_response(200);
             self.send_header('Content-type', 'application/json');
             self.end_headers();
