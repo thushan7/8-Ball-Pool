@@ -216,7 +216,6 @@ class MyHandler( BaseHTTPRequestHandler ):
                                         function handleMouseMove(event) {{
                                             if (isDragging) {{
                                                 const line = document.getElementById('aiming-line');
-
                                                 const dx = event.clientX - initialX;
                                                 const dy = event.clientY - initialY;
                                                 const length = Math.sqrt(dx**2 + dy**2);
@@ -240,8 +239,8 @@ class MyHandler( BaseHTTPRequestHandler ):
                                                 document.getElementById('line').style.display = 'none';
                                                 const dx = event.clientX - initialX;
                                                 const dy = event.clientY - initialY;
-                                                const velx = dx/MAX_LINE_LENGTH*10000;
-                                                const vely = dy/MAX_LINE_LENGTH*10000;
+                                                const velx = dx/MAX_LINE_LENGTH*(-10000);
+                                                const vely = dy/MAX_LINE_LENGTH*(-10000);
 
                                                 const x = new XMLHttpRequest();
                                                 x.open('POST', '/shoot.html', true);
