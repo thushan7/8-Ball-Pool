@@ -6,7 +6,6 @@
 #include <string.h>
 
 
-
 /*creates still-ball object
 number holds number of pool ball; pos holds position vector
 returns the still-ball object*/
