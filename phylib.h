@@ -10,7 +10,7 @@
 #define PHYLIB_VEL_EPSILON (0.01) // mm/s
 #define PHYLIB_DRAG (150.0) // mm/s^2
 #define PHYLIB_MAX_TIME (600) // s
-#define PHYLIB_MAX_OBJECTS (26)
+#define PHYLIB_MAX_OBJECTS (26) 
 
 typedef enum {
 	PHYLIB_STILL_BALL = 0,
